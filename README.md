@@ -1,40 +1,61 @@
 # Evidence Trail — Local CRM Evidence Workbench
 
-A Windows-first, local-processing workbench for capturing an authorized CRM record, preserving its evidence, extracting file text, and rebuilding traceable relationships and timelines.
+**Save one OKKI customer's communications and files locally, so you can review what happened and inspect the original sources.**
 
 [English](#english) · [中文](#中文) · [Step-by-step setup](docs/setup.md) · [Troubleshooting](docs/troubleshooting.md) · [Architecture](docs/architecture.md)
 
 ## English
 
-### Contents
+This workbench was developed for **OKKI / Xiaoman at `crm.xiaoman.cn`** on Windows. Use it when a customer's history is spread across messages, attachments and activity records, and you need a local archive before reviewing the case.
 
-- [What this project does](#what-this-project-does)
-- [Scope and maturity](#scope-and-maturity)
-- [Requirements](#requirements)
-- [Quick start: synthetic checks only](#quick-start-synthetic-checks-only)
-- [Capture your own authorized record](#capture-your-own-authorized-record)
-- [Local processing](#local-processing)
-- [Repository map](#repository-map)
-- [Dependencies and optional integrations](#dependencies-and-optional-integrations)
-- [Development and contributions](#development-and-contributions)
-- [License](#license)
+### When to use it
 
-### What this project does
+| Your question | What the workbench helps you do |
+| --- | --- |
+| **What happened with this customer?** | Save the selected OKKI record's available communications and files, then inspect their original sources and recorded gaps. |
+| **Where is that quotation or specification?** | After configuring the required local processing, extract document text and build searchable records and attachment catalogs. |
+| **How do these messages, files and events relate?** | After the processing prerequisites are met, build source-backed relationships and separate business-event and collection timelines. |
 
-- Keeps browser collection and local post-processing separate.
-- Provides an Electron browser/control panel and a single-record capture entry point.
-- Saves source objects, request/visit metadata, manifests, and hashes before building derivatives.
-- Extracts native document text and optionally performs local OCR, archive expansion, and media processing.
-- Retains both content identity and occurrence identity: one byte-identical attachment can belong to several messages.
-- Builds explicit source-backed relations, a business-event timeline, and a separate collection timeline.
-- Exports local SQLite/FTS, Parquet, GraphML, spreadsheet catalogs, and document reports when the corresponding prerequisites are available.
-- Includes synthetic regression tests for identity guards, locks, startup races, evidence storage, archive limits, lineage, and delivery checks.
+**Invented example:** two messages contain the same `example-quote.pdf`. The archive can recognize that the file bytes are identical while preserving both message occurrences. During review, you can trace the quotation to each message instead of losing one appearance during deduplication. Business-event time and the time this tool collected the record remain separate.
+
+### Input and output
+
+| You provide | You get |
+| --- | --- |
+| One authorized OKKI customer record and a login completed in the collector's browser | Local source objects/files, capture metadata, hashes, manifests and reconciliation/source-gap records |
+| A valid captured case **plus the reviewed manual-trade prerequisites** | Local extraction results and, where configured, searchable SQLite/FTS, relationships, timelines, catalogs and reports |
+| Optional local OCR, conversion or media tools | Additional derivatives linked back to preserved original files |
+
+**Capture and full processing are different stages.** Automatic capture does not by itself unlock the current full extractor. `prepare`, `run` and `verify` require a reviewed manual-trade manifest; initial combined delivery also requires its matching receipt. This public release has the consumers and tests, **not a general-purpose manual-trade capture/receipt producer**. The [manual-trade guide](docs/manual-trade.md) explains that integration prerequisite. Keep a limited archive explicitly limited when it is not met.
+
+### Real platforms and tools used
+
+| Platform or tool | Its actual role |
+| --- | --- |
+| **OKKI / Xiaoman — `crm.xiaoman.cn`** | The CRM targeted by the [current adapter](app/src/adapter.ts) and [synthetic scope configuration](config/scope.json). A real case uses your own selected record and account. |
+| **Windows + PowerShell** | The supported complete operating path, including launch/control scripts and optional Office COM conversion. |
+| **Electron + Playwright Core** | Provides the local browser/control panel and collects the bound record through the implemented adapter. |
+| **Python + SQLite/FTS + DuckDB** | Processes local evidence and produces searchable records and data exports after source prerequisites are satisfied. |
+| **Tesseract + Poppler** | Optional local OCR and PDF page rendering; executables and language files are installed separately. |
+| **Microsoft Office / LibreOffice + ExcelJS** | Optional document conversion/export, plus open-source spreadsheet generation. Office is optional and is not redistributed. |
+| **FFmpeg / FFprobe + an external local ASR driver** | Optional media preparation and a defined transcription integration interface. The ASR driver and model weights must be supplied separately. |
+| **Codex** | The development and assisted operating context. The standalone app and processing scripts can be used without a Codex conversation. |
+
+These names explain where the tool runs and what it uses. They are not customer examples or a claim of affiliation with those platforms.
+
+### Start with one route
+
+1. **New to the project:** follow [Requirements](#requirements), then [synthetic checks](#quick-start-synthetic-checks-only). These do not access a customer.
+2. **Ready to preserve a customer record:** after checks pass, use [single-record capture](#capture-your-own-authorized-record), complete login yourself and inspect the resulting archive.
+3. **Need extraction, search, relationships or reports:** satisfy [manual-trade prerequisites](docs/manual-trade.md), then follow [local processing](#local-processing). Do not treat an absent prerequisite as a successful run.
+
+Detailed installation and expected results remain in [Setup](docs/setup.md); failure paths are in [Troubleshooting](docs/troubleshooting.md).
 
 ### Scope and maturity
 
 This is a source release, not a hosted service, a customer dataset, or a claim that every CRM installation can be captured completely.
 
-The included adapter targets OKKI's public-facing web application shape. Adapter routes, visible labels, permissions, pagination, and response schemas can change. Other CRM products require a real adapter implementation; changing the origin alone is not enough.
+The included adapter targets the logged-in OKKI / Xiaoman web application at `crm.xiaoman.cn`. Adapter routes, visible labels, permissions, pagination, and response schemas can change. Other CRM products require a real adapter implementation; changing the origin alone is not enough.
 
 The default learning path is **single-record, fresh login, synthetic tests first**. Ordinary queue/multi-instance collection remains advanced functionality. Sensitive trade/customs pages are excluded from the automatic capture channel and require a separately reviewed manual workflow.
 
@@ -176,6 +197,17 @@ Private runtime profiles, cases, outputs, downloaded models, and test working di
 
 The spreadsheet builders' PNGs are open-source SVG/Sharp layout previews. They are not native Excel/Office rendering or recalculation certificates; final human-format QA remains a separate local step.
 
+### How evidence is kept
+
+- Keeps browser collection and local post-processing separate.
+- Provides an Electron browser/control panel and a single-record capture entry point.
+- Saves source objects, request/visit metadata, manifests, and hashes before building derivatives.
+- Extracts native document text and optionally performs local OCR, archive expansion, and media processing.
+- Retains both content identity and occurrence identity: one byte-identical attachment can belong to several messages.
+- Builds explicit source-backed relations, a business-event timeline, and a separate collection timeline.
+- Exports local SQLite/FTS, Parquet, GraphML, spreadsheet catalogs, and document reports when the corresponding prerequisites are available.
+- Includes synthetic regression tests for identity guards, locks, startup races, evidence storage, archive limits, lineage, and delivery checks.
+
 ### Dependencies and optional integrations
 
 | Integration | Included in source | What you install separately |
@@ -195,6 +227,19 @@ The spreadsheet builders' PNGs are open-source SVG/Sharp layout previews. They a
 
 External tools, model weights, and service terms have their own licenses. The project's MIT license does not relicense them.
 
+### Choose the right project
+
+| Your task | Project |
+| --- | --- |
+| Preserve and review one OKKI customer's communications and files | **CRM Evidence Workbench — this repository** |
+| Archive another adapted website or research public market leads | [Local Evidence Collector](https://github.com/KietC/local-evidence-collector) |
+| Transcribe existing media and make reviewed learning materials | [Polyglot Media Workbench](https://github.com/KietC/polyglot-media-workbench) |
+| Show compatible Xiaomi phone captions on a Windows screen | [Caption Relay](https://github.com/KietC/caption-relay) |
+| Organize a trade-show exhibitor directory | [Exhibitor Research Archive](https://github.com/KietC/exhibitor-research-archive) |
+| Investigate the manufacturer behind a product | [FactoryTrace](https://github.com/KietC/factorytrace) |
+
+These links are selection guidance. A shared capture core or a media-workbench handoff still needs a supported interface and validation; this table does not claim those integrations are complete.
+
 ### Development and contributions
 
 Use temporary synthetic inputs when changing source. Never attach real mail, customer names, attachments, tokens, login profiles, or raw production logs to an issue or pull request. Include the command, exit code, runtime versions, and sanitized error code instead.
@@ -209,35 +254,58 @@ Project source is released under the [MIT License](LICENSE). Third-party depende
 
 ## 中文
 
-### 目录
+**把某一 OKKI 客户的沟通和文件保存到本地，方便复盘发生过什么，并查看原始来源。**
 
-- [项目能做什么](#项目能做什么)
-- [范围与成熟度](#范围与成熟度)
-- [运行要求](#运行要求)
-- [快速开始：只运行合成检查](#快速开始只运行合成检查)
-- [采集自己的授权记录](#采集自己的授权记录)
-- [本地处理](#本地处理)
-- [仓库结构](#仓库结构)
-- [依赖与可选集成](#依赖与可选集成)
-- [开发与贡献](#开发与贡献)
-- [许可证](#许可证)
+这套工作台实际为 **OKKI / 小满 `crm.xiaoman.cn`** 开发，完整运行路线以 Windows 为主。客户历史分散在邮件、附件和动态里，你需要先保存本地原件再复盘时，可以使用它。
 
-### 项目能做什么
+### 适合什么场景
 
-- 将浏览器采集与本地后处理分开。
-- 提供 Electron 浏览器/控制面板，以及绑定单一记录的采集入口。
-- 先保存原始对象、请求/访问元数据、清单与哈希，再生成派生结果。
-- 提取文档原生文字，可选启用本地 OCR、压缩包递归与媒体处理。
-- 同时保留“内容对象”和“出现实例”：字节相同的一份附件可以属于多封邮件。
-- 建立有明确来源的关系、业务事件时间线，以及独立的采集时间线。
-- 在相关依赖齐备时导出本地 SQLite/FTS、Parquet、GraphML、Excel 目录和文档报告。
-- 提供身份绑定、锁、启动竞争、证据存储、压缩预算、血缘和交付检查的合成回归测试。
+| 你想知道什么 | 工作台能帮你做什么 |
+| --- | --- |
+| **这个客户之前发生过什么？** | 保存选定 OKKI 记录中可取得的沟通和文件，查看原件及明确记录的来源缺口。 |
+| **那份报价或规格文件在哪里？** | 配置必需的本地处理后，提取文档文字，建立可检索记录和附件目录。 |
+| **邮件、附件和事件是什么关系？** | 满足后处理前提后，建立有来源的关系，并分开业务事件时间线与采集时间线。 |
+
+**虚构示例：**两封邮件都附有同一份 `example-quote.pdf`。归档可以识别两份附件字节相同，同时保留它分别出现在两封邮件里的记录。复盘时能从报价追溯到每封邮件，不会因为去重丢掉一次出现。业务发生时间与本工具采集记录的时间也分开保存。
+
+### 输入什么，最后得到什么
+
+| 你提供什么 | 最后得到什么 |
+| --- | --- |
+| 一条有权读取的 OKKI 客户记录，并在采集器浏览器中自己完成登录 | 本地原始对象/文件、采集元数据、哈希、清单以及对账/来源缺口记录 |
+| 有效的采集案例，**加上审查后的手动贸易前提材料** | 本地提取结果，以及配置后的 SQLite/FTS 检索、关系、时间线、目录和报告 |
+| 可选的本地 OCR、转换或媒体工具 | 与原文件保持来源关联的更多派生结果 |
+
+**采集与完整后处理是两个阶段。** 自动采集本身不能直接开启当前完整提取器。`prepare`、`run`、`verify` 要求审查后的手动贸易清单；初始联合交付还要求匹配回执。本公开版本包含消费端和测试，**没有通用手动贸易采集/回执生成器**。[手动贸易指南](docs/manual-trade.md)说明了这项集成前提。未满足时，有限归档仍应明确标为有限范围。
+
+### 实际用到了哪些平台和工具
+
+| 平台或工具 | 在本项目中的实际作用 |
+| --- | --- |
+| **OKKI / 小满 — `crm.xiaoman.cn`** | [当前适配器](app/src/adapter.ts)和[合成范围配置](config/scope.json)针对的 CRM。真实案例使用你自己选定的记录和账号。 |
+| **Windows + PowerShell** | 完整支持的操作路线，包括启动/控制脚本及可选 Office COM 转换。 |
+| **Electron + Playwright Core** | 提供本地浏览器/控制面板，通过已实现的适配器采集绑定记录。 |
+| **Python + SQLite/FTS + DuckDB** | 满足来源前提后，处理本地证据并生成可检索记录与数据导出。 |
+| **Tesseract + Poppler** | 可选本地 OCR 和 PDF 逐页渲染；程序及语言包需另行安装。 |
+| **Microsoft Office / LibreOffice + ExcelJS** | 可选文档转换/导出，以及开源表格生成。Office 可选，仓库不分发它。 |
+| **FFmpeg / FFprobe + 外部本地 ASR 驱动** | 可选媒体准备及明确的转写接口，ASR 驱动和模型权重需另行提供。 |
+| **Codex** | 开发及辅助操作环境，独立应用和处理脚本不依赖 Codex 聊天才能使用。 |
+
+这些名称说明工具实际运行在哪里、用了什么，不是客户样例，也不代表与平台存在合作关系。
+
+### 先选一条入门路线
+
+1. **第一次使用：**先看[运行要求](#运行要求)，再做[合成检查](#快速开始只运行合成检查)，不会访问真实客户。
+2. **需要保存客户原件：**检查通过后，按[单记录采集](#采集自己的授权记录)自己登录，检查得到的归档。
+3. **需要提取、检索、关系或报告：**先满足[手动贸易前提](docs/manual-trade.md)，再按[本地处理](#本地处理)操作；不能把缺少前提当成处理成功。
+
+详细安装和预期结果仍在[配置指南](docs/setup.md)，失败处理见[避坑指南](docs/troubleshooting.md)。
 
 ### 范围与成熟度
 
 这是源码发布，不是托管服务、客户数据集，也不是“所有 CRM 都能绝对完整采集”的承诺。
 
-所带适配器针对 OKKI Web 应用的公开页面结构。路由、可见标签、权限、分页和响应结构都可能变化。适配其他 CRM 需要真正实现适配器，不能只改域名。
+所带适配器针对 `crm.xiaoman.cn` 上登录后的 OKKI / 小满 Web 应用。路由、可见标签、权限、分页和响应结构都可能变化。适配其他 CRM 需要真正实现适配器，不能只改域名。
 
 默认学习顺序是：**先合成测试，再全新登录，再单记录采集**。普通队列和多实例采集属于高级功能。敏感贸易/海关页面不进入自动采集通道，需要单独审核的手动流程。
 
@@ -379,6 +447,17 @@ $CompanyId = '123456789'
 
 表格构建器的 PNG 是开源 SVG/Sharp 布局预览，不是 Excel/Office 原生渲染或重算证书；最终人读版 QA 仍需单独在本机完成。
 
+### 原件和关系如何保留
+
+- 将浏览器采集与本地后处理分开。
+- 提供 Electron 浏览器/控制面板，以及绑定单一记录的采集入口。
+- 先保存原始对象、请求/访问元数据、清单与哈希，再生成派生结果。
+- 提取文档原生文字，可选启用本地 OCR、压缩包递归与媒体处理。
+- 同时保留“内容对象”和“出现实例”：字节相同的一份附件可以属于多封邮件。
+- 建立有明确来源的关系、业务事件时间线，以及独立的采集时间线。
+- 在相关依赖齐备时导出本地 SQLite/FTS、Parquet、GraphML、Excel 目录和文档报告。
+- 提供身份绑定、锁、启动竞争、证据存储、压缩预算、血缘和交付检查的合成回归测试。
+
 ### 依赖与可选集成
 
 | 集成 | 源码中包含 | 需要自己安装 |
@@ -397,6 +476,19 @@ $CompanyId = '123456789'
 | 私密 WARC 导出 | 导出器与带哈希锁定的依赖 | 可选 `warcio`；生成的 WARC 不能公开。 |
 
 外部工具、模型权重和服务条款有各自的许可证。项目 MIT 许可证不能替它们重新授权。
+
+### 六个项目怎么选
+
+| 你要做的事 | 选择的项目 |
+| --- | --- |
+| 保存和复盘某一 OKKI 客户的沟通与文件 | **CRM Evidence Workbench：本仓库** |
+| 归档其他已适配网站，或研究公开市场线索 | [Local Evidence Collector](https://github.com/KietC/local-evidence-collector) |
+| 转写已有音视频，制作审校学习材料 | [Polyglot Media Workbench](https://github.com/KietC/polyglot-media-workbench) |
+| 把兼容小米手机字幕显示在 Windows 大屏上 | [Caption Relay](https://github.com/KietC/caption-relay) |
+| 整理展会展商名单 | [Exhibitor Research Archive](https://github.com/KietC/exhibitor-research-archive) |
+| 调查产品背后的制造方 | [FactoryTrace](https://github.com/KietC/factorytrace) |
+
+这些链接用于选工具。共用采集核心或对接音视频工作台仍需要受支持的接口及验证，不能据此声称已完成集成。
 
 ### 开发与贡献
 
