@@ -1,0 +1,83 @@
+{
+  "schema": 1,
+  "adapter_id": "okki-crm-v1",
+  "updated_at": "2026-10-06",
+  "origin": "https://crm.xiaoman.cn",
+  "customer_path": "/crm/customer/personal",
+  "customer_list_url": "https://crm.xiaoman.cn/crm/customer/list?query=%7B%22curPage%22%3A1%2C%22pageSize%22%3A20%2C%22show_field_key%22%3A%22company.private.list.field%22%2C%22sort_scene%22%3A%22setting%22%7D",
+  "customer_queue": {
+    "stage_title": "客户阶段",
+    "list_endpoint": "/api/customerV3Read/companyList",
+    "page_size": 20,
+    "safety_page_cap": 500
+  },
+  "page_asset_hosts": [
+    "crm.xiaoman.cn",
+    "cdn.xiaoman.cn",
+    "v4client-oss.xiaoman.cn",
+    "v4client-oss-new.xiaoman.cn",
+    "v4client.oss-cn-hangzhou.aliyuncs.com"
+  ],
+  "external_ai_blocked_hosts": [
+    "api.openai.com",
+    "chatgpt.com",
+    "openai.com",
+    "api.anthropic.com",
+    "generativelanguage.googleapis.com",
+    "api.mistral.ai",
+    "api.cohere.com"
+  ],
+  "root_tabs": [
+    {"id": "dynamic", "labels": ["动态"]},
+    {"id": "info", "labels": ["资料"]},
+    {"id": "trade", "labels": ["商机&交易", "商机＆交易"]},
+    {"id": "tips", "labels": ["Tips", "TIPS"]},
+    {"id": "statistics", "labels": ["数据分析"]},
+    {"id": "relational", "labels": ["文档"]},
+    {"id": "history", "labels": ["操作历史"]}
+  ],
+  "dynamic": {
+    "history_labels": ["历史动态"],
+    "filter_labels": [["全部"], ["跟进记录"], ["聊天记录"], ["其他动态"]],
+    "mail_labels": ["往来邮件", "邮件"],
+    "next_labels": ["下一页", "下页"],
+    "trail_endpoint": "/api/customerRead/trailList",
+    "mail_info_endpoint": "/api/mailRead/info",
+    "mail_track_endpoint": "/api/mailRead/trackDetail",
+    "mail_module_values": ["202", "201", "3"],
+    "visible_page_cap": 2,
+    "safety_page_cap": 5000
+  },
+  "documents": {
+    "list_endpoint": "/api/fileFolderRead/fileList",
+    "folder_endpoint": "/api/fileFolderRead/folderList",
+    "next_labels": ["下一页", "下页"],
+    "visible_page_cap": 2,
+    "safety_page_cap": 5000
+  },
+  "expected_endpoint_contracts": [
+    {"id": "customer_detail", "method": "GET", "path": "/api/customerV2Read/detail", "min": 1},
+    {"id": "form_fields", "method": "GET", "path": "/api/customerV2Read/FormFieldList", "min": 1},
+    {"id": "contacts", "method": "POST", "path": "/api/customerV2Read/companyCustomerList", "min": 1},
+    {"id": "opportunity", "method": "POST", "path": "/api/opportunityRead/list", "min": 1},
+    {"id": "orders", "method": "GET", "path": "/api/customerRead/customerOrderList", "min": 1},
+    {"id": "related_products", "method": "GET", "path": "/api/customerRead/relatedProductList", "min": 1},
+    {"id": "operation_history", "method": "GET", "path": "/api/customerRead/companyDiffList", "min": 1},
+    {"id": "documents", "method": "GET", "path": "/api/fileFolderRead/fileList", "min": 1},
+    {"id": "document_folders", "method": "GET", "path": "/api/fileFolderRead/folderList", "min": 1},
+    {"id": "dynamic", "method": "GET", "path": "/api/customerRead/trailList", "min": 1},
+    {"id": "mail_previous_next", "method": "GET", "path": "/api/customerRead/mailPreviousNext", "min": 0},
+    {"id": "analytics", "method": "POST", "path": "/api/reportRead/detail", "min": 1}
+  ],
+  "known_count_paths": {
+    "trail": ["data.totalItem", "data.total", "data.count", "totalItem", "total", "count"],
+    "mail_previous_next": ["data.total", "total"],
+    "contacts": ["data.totalItem", "data.total", "data.count", "totalItem", "total", "count"],
+    "documents": ["data.totalItem", "data.total", "data.count", "totalItem", "total", "count"],
+    "document_folders": ["data.totalItem", "data.total", "data.count", "totalItem", "total", "count"],
+    "orders": ["data.totalItem", "data.total", "data.count", "totalItem", "total", "count"],
+    "related_products": ["data.totalItem", "data.total", "data.count", "totalItem", "total", "count"],
+    "operation_history": ["data.totalItem", "data.total", "data.count", "totalItem", "total", "count"],
+    "opportunity": ["data.totalItem", "data.total", "data.count", "totalItem", "total", "count"]
+  }
+}

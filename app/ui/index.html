@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OKKI 单一客户全量落盘</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <nav id="browser-toolbar" class="browser-toolbar" hidden aria-label="内置浏览器工具栏">
+    <button id="sidebar-smaller" title="缩小左侧控制台">左−</button>
+    <button id="sidebar-larger" title="放大左侧控制台">左＋</button>
+    <button id="browser-back" title="后退">←</button>
+    <button id="browser-forward" title="前进">→</button>
+    <button id="browser-home" title="客户列表">⌂</button>
+    <button id="browser-reload" title="刷新">↻</button>
+    <form id="browser-address-form">
+      <span class="lock">本地持久会话</span>
+      <input id="browser-address" aria-label="小满地址" autocomplete="off" spellcheck="false">
+    </form>
+    <button id="import-cookies" class="import-button" title="仅从本地 JSON 文件导入 xiaoman.cn Cookie">导入会话</button>
+  </nav>
+  <div id="resize-handle" class="resize-handle" hidden title="拖动调整左右区域宽度" aria-label="调整左右区域宽度"></div>
+
+  <div class="control-shell">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">O</span>
+        <div><h1>OKKI 单客落盘</h1><p>LOCAL EVIDENCE CONSOLE</p></div>
+      </div>
+      <div class="privacy-pill"><span></span>外部 AI 零上传</div>
+    </header>
+
+    <main>
+      <section class="hero panel">
+        <div class="eyebrow">CURRENT CUSTOMER</div>
+        <div class="customer-line">
+          <div>
+            <h2 id="customer-title">等待内置浏览器</h2>
+            <p id="customer-url">请在右侧登录小满并打开单一客户详情页</p>
+          </div>
+          <div id="browser-badge" class="status-badge offline">未连接</div>
+        </div>
+        <div class="actions">
+          <button id="launch-browser" class="button secondary"><span>01</span>回到客户列表</button>
+          <button id="start-capture" class="button primary" disabled><span>02</span>一键完整落盘当前客户</button>
+          <button id="cancel-capture" class="button danger" hidden>停止任务</button>
+        </div>
+        <div class="next-customer-box">
+          <label for="next-customer-name">下一个客户</label>
+          <div class="next-customer-line">
+            <input id="next-customer-name" readonly placeholder="返回客户列表后自动计算">
+            <button id="start-next-customer" class="button primary" disabled>开始下一个</button>
+            <button id="cancel-auto-next" class="button danger" hidden>取消自动下一个</button>
+          </div>
+          <p id="auto-next-status" class="auto-next-status">成功后自动等待 10 秒；error 停止，warning 继续。</p>
+          <p id="next-customer-meta">顺序：客户阶段从下到上，每个阶段内从上到下；cases 中已有同名文件夹或已完整落盘的客户自动跳过。</p>
+        </div>
+        <p class="hint">只采集当前地址中的 <code>company_id</code> 及其详情页直接暴露的子页。Cookie 保存在本机持久会话中，不显示、不写日志、不上传。</p>
+      </section>
+
+      <section class="panel progress-panel">
+        <div class="section-head">
+          <div><div class="eyebrow">CAPTURE STATUS</div><h3 id="job-headline">等待采集</h3></div>
+          <strong id="progress-number">0%</strong>
+        </div>
+        <div class="progress-track"><div id="progress-bar"></div></div>
+        <p id="job-detail" class="job-detail">右侧打开单一客户详情页后即可采集</p>
+        <div class="phase-list" id="phase-list">
+          <div data-phase="preflight"><i></i><span>范围与隐私门</span></div>
+          <div data-phase="root"><i></i><span>根页面证据</span></div>
+          <div data-phase="tabs"><i></i><span>全部标签页</span></div>
+          <div data-phase="mail"><i></i><span>动态与邮件</span></div>
+          <div data-phase="documents"><i></i><span>文档与附件</span></div>
+          <div data-phase="reconcile"><i></i><span>对象级对账</span></div>
+        </div>
+      </section>
+
+      <section class="panel evidence-panel">
+        <div class="section-head">
+          <div><div class="eyebrow">EVIDENCE VAULT</div><h3>本地证据库</h3></div>
+          <button id="open-case" class="text-button" disabled>打开目录 →</button>
+        </div>
+        <div class="path-card"><span>案例目录</span><code id="case-path">尚未建立</code></div>
+        <dl class="metrics" id="metrics">
+          <div><dt>响应</dt><dd>—</dd></div>
+          <div><dt>邮件筛选行 / 详情</dt><dd>—</dd></div>
+          <div><dt>资源文件</dt><dd>—</dd></div>
+          <div><dt>对账缺口</dt><dd>—</dd></div>
+        </dl>
+      </section>
+
+      <section class="panel log-panel">
+        <div class="section-head">
+          <div><div class="eyebrow">AUDIT LOG</div><h3>告警与缺口</h3></div>
+          <span id="adapter-id">适配器 —</span>
+        </div>
+        <div id="alerts" class="alerts"><p>暂无告警。</p></div>
+      </section>
+    </main>
+
+    <footer><span id="runtime">本地控制台</span><span>127.0.0.1 ONLY</span></footer>
+  </div>
+  <script src="/app.js" type="module"></script>
+</body>
+</html>

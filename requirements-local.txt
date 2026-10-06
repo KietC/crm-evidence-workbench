@@ -1,0 +1,7 @@
+# Optional local processing dependencies. Core non-media tests use stdlib.
+pypdf
+pdfplumber
+Pillow
+python-docx
+duckdb
+pywin32; sys_platform == 'win32'

@@ -1,0 +1,40 @@
+{
+  "name": "crm-evidence-workbench",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Evidence Trail: local-first, scoped CRM evidence capture and recovery",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "desktop": "electron dist/electron-main.js",
+    "desktop:dev": "npm run build && electron dist/electron-main.js",
+    "dev": "tsx src/server.ts",
+    "start": "node dist/server.js",
+    "supplemental:mail-fetch": "node dist/supplemental-mail-fetch.js",
+    "capture:relation-window": "node dist/relation-window-capture.js",
+    "monitor": "node dist/codex-monitor.js",
+    "check": "tsc -p tsconfig.json --noEmit",
+    "test": "node --test dist/tests/adapter.test.js dist/tests/evidence-store.test.js dist/tests/case-inventory.test.js dist/tests/runtime-repair.test.js dist/tests/relation-window-capture.test.js dist/tests/capture-start-gate.test.js dist/tests/os-lock.test.js dist/tests/launcher-paths.test.js dist/tests/one-shot-server.test.js",
+    "smoke": "node dist/smoke.js"
+  },
+  "dependencies": {
+    "playwright-core": "1.61.1"
+  },
+  "devDependencies": {
+    "@types/node": "24.13.3",
+    "electron": "43.5.0",
+    "tsx": "4.23.1",
+    "typescript": "7.0.2"
+  },
+  "allowScripts": {
+    "esbuild@0.28.1": true,
+    "electron@43.5.0": true
+  },
+  "overrides": {
+    "undici": "7.29.1"
+  }
+}

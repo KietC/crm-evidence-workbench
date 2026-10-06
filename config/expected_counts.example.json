@@ -1,0 +1,11 @@
+{
+  "schema": "evidence_trail.expected_counts.v1",
+  "company_id": "123456789",
+  "note": "Synthetic example only; replace every count from your own verified manifests / 仅合成示例，所有数量需来自自己的核验清单",
+  "old_files": 1,
+  "historical_mail_files": 1,
+  "min_evidence_files": 2,
+  "attachment_occurrences": 1,
+  "mail_attachment_relations": 1,
+  "multiparent_attachments": 0
+}

@@ -1,0 +1,21 @@
+{
+  "name": "crm-evidence-workbench",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Evidence Trail: local CRM capture, recursive extraction and traceable timelines",
+  "license": "MIT",
+  "type": "module",
+  "engines": { "node": ">=24.0.0" },
+  "scripts": {
+    "test": "node --test scripts/tests/*.test.mjs capture/tests/*.test.mjs",
+    "check:docs": "node scripts/lint_docs.mjs",
+    "check": "npm run test && npm run check:docs"
+  },
+  "dependencies": {
+    "exceljs": "4.4.0",
+    "jszip": "3.10.2",
+    "sharp": "0.35.5"
+  },
+  "devDependencies": { "markdownlint": "0.41.1" },
+  "overrides": { "exceljs": { "uuid": "11.1.1" }, "katex": "0.18.2" }
+}

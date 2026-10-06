@@ -1,0 +1,42 @@
+name: Synthetic checks
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-checks:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONUTF8: "1"
+      ELECTRON_SKIP_BINARY_DOWNLOAD: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            app/package-lock.json
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+          enable-cache: true
+      - name: Install public dependencies
+        run: |
+          uv venv --managed-python --python 3.12 .venv
+          uv pip install --python .venv/Scripts/python.exe --require-hashes -r requirements-lock.txt
+          npm ci --no-audit --no-fund
+          npm --prefix app ci --no-audit --no-fund
+      - name: Public-source privacy and synthetic checks
+        run: |
+          .venv/Scripts/python.exe scripts/sqlite_preflight.py
+          .venv/Scripts/python.exe scripts/privacy_scan.py --root . --tracked
+          ./scripts/check.ps1 -Python .venv/Scripts/python.exe
